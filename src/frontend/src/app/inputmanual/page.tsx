@@ -14,7 +14,12 @@ interface IOptimalPathResult {
   executionTime: number;
 }
 
+interface NumericInputErrors {
+  [key: string]: string;
+}
+
 export const InputManual = () => {
+  const [tokenError, setTokenError] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const [combinedTokens, setCombinedTokens] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,20 +31,93 @@ export const InputManual = () => {
   const [numSequences, setNumSequences] = useState("");
   const [sequenceSize, setSequenceSize] = useState("");
   const [generatedMatrix, setGeneratedMatrix] = useState<string[][]>([]);
+  const [numericInputErrors, setNumericInputErrors] =
+    useState<NumericInputErrors>({
+      bufferSize: "",
+      rows: "",
+      columns: "",
+      numSequences: "",
+      sequenceSize: "",
+    });
   const [generatedSequences, setGeneratedSequences] = useState<
     ITokenSequence[]
   >([]);
+
   const totalRewards = generatedSequences.reduce(
     (total, sequence) => total + sequence.reward,
     0
   );
+
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
 
+  const validateNumericInputs = () => {
+    const errors: NumericInputErrors = {};
+
+    const numericFields = [
+      { key: "bufferSize", value: bufferSize, label: "Buffer size" },
+      { key: "rows", value: rows, label: "Number of rows" },
+      { key: "columns", value: columns, label: "Number of columns" },
+      {
+        key: "numSequences",
+        value: numSequences,
+        label: "Number of sequences",
+        min: 2,
+      },
+      {
+        key: "sequenceSize",
+        value: sequenceSize,
+        label: "Maximal sequences amount",
+      },
+    ];
+
+    numericFields.forEach(({ key, value, label, min = 1 }) => {
+      const intValue = parseInt(value);
+      if (intValue < min) {
+        errors[key] = `Error : ${label} must be at least ${min}.`;
+      }
+    });
+
+    return errors;
+  };
+  useEffect(() => {
+    const initialErrors = validateNumericInputs();
+    setNumericInputErrors(initialErrors);
+  }, [bufferSize, rows, columns, numSequences, sequenceSize]);
+
+  useEffect(() => {
+    if (combinedTokens) {
+      const inputTokens = combinedTokens.toUpperCase().split(" ");
+      if (inputTokens.some((token) => token.length !== 2)) {
+        setTokenError("Error: Tokens must be exactly two characters long.");
+      } else {
+        setTokenError("");
+      }
+    } else {
+      setTokenError("");
+    }
+  }, [combinedTokens]);
+
   useEffect(() => {
     setTokens(Array.from({ length: uniqueTokens }, () => ""));
   }, [uniqueTokens]);
+
+  useEffect(() => {
+    if (parseInt(sequenceSize) > parseInt(bufferSize)) {
+      setNumericInputErrors((errors) => ({
+        ...errors,
+        sequenceSize:
+          "Maximum size of sequences cannot be greater than the buffer size.",
+      }));
+    } else {
+      setNumericInputErrors((errors) => {
+        const newErrors = { ...errors };
+        delete newErrors.sequenceSize;
+        return newErrors;
+      });
+    }
+  }, [sequenceSize, bufferSize]);
 
   const [optimalPathResult, setOptimalPathResult] =
     useState<IOptimalPathResult>({
@@ -57,6 +135,22 @@ export const InputManual = () => {
     const tokensArray = combinedTokens
       .split(" ")
       .filter((token) => token.trim() !== "");
+
+    const inputTokens = combinedTokens.toUpperCase().split(" ");
+    if (inputTokens.some((token) => token.length !== 2)) {
+      setTokenError("Error :    Tokens must be exactly two characters long.");
+      return;
+    } else {
+      setTokenError("");
+    }
+
+    const numericErrors = validateNumericInputs();
+    if (Object.keys(numericErrors).length > 0) {
+      setNumericInputErrors(numericErrors);
+      return;
+    } else {
+      setNumericInputErrors({});
+    }
 
     const formData = {
       uniqueTokens,
@@ -168,14 +262,19 @@ export const InputManual = () => {
                 value={bufferSize}
                 onChange={(e) => setBufferSize(e.target.value)}
                 className="block text-center w-full px-10 py-2 bg-black border border-2 border-basic text-basic"
-                placeholder="5"
+                placeholder="1"
                 required
               />
+              {numericInputErrors.bufferSize && (
+                <p className="text-red-500 font-rajdhaniRegular mt-1">
+                  {numericInputErrors.bufferSize}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col border-basic border-2">
             <div className="bg-basic px-10 text-black font-rajdhaniSemiBold font-semibold py-2 text-[24px]">
-              2. UNIQUE TOKENS
+              2. ENTER UNIQUE TOKENS
             </div>
             <div className="mt-4 mb-4 px-10">
               <input
@@ -189,32 +288,47 @@ export const InputManual = () => {
                 placeholder="7A 55 1C E9"
                 required
               />
+              {tokenError && (
+                <p className="text-red-500 font-rajdhaniRegular mt-1">
+                  {tokenError}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col border-basic border-2">
             <div className="bg-basic px-10 text-black font-rajdhaniSemiBold font-semibold py-2 text-[24px]">
               3. ENTER MATRIX SIZE
             </div>
-            <div className="flex flex-grow items-center mt-4 mb-4 justify-center space-x-8">
-              <input
-                type="number"
-                id="rows"
-                placeholder="8"
-                value={rows}
-                onChange={(e) => setRows(e.target.value)}
-                className="block text-center w-28  py-2 border border-2 border-basic bg-black text-basic"
-                required
-              />
-              <p className="text-basic">X</p>
-              <input
-                type="number"
-                id="columns"
-                placeholder="8"
-                value={columns}
-                onChange={(e) => setColumns(e.target.value)}
-                className="block text-center w-28 py-2 border border-2 border-basic bg-black text-basic"
-                required
-              />
+            <div className="flex flex-col items-center justify-center flex-grow">
+              <div className="flex flex-grow items-center mt-4 mb-4 justify-center space-x-8">
+                <input
+                  type="number"
+                  id="rows"
+                  placeholder="8"
+                  value={rows}
+                  onChange={(e) => setRows(e.target.value)}
+                  className="block text-center w-28  py-2 border border-2 border-basic bg-black text-basic"
+                  required
+                />
+                <p className="text-basic">X</p>
+                <input
+                  type="number"
+                  id="columns"
+                  placeholder="8"
+                  value={columns}
+                  onChange={(e) => setColumns(e.target.value)}
+                  className="block text-center w-28 py-2 border border-2 border-basic bg-black text-basic"
+                  required
+                />
+              </div>
+              <div className="flex flex-col justify-center items-center font-rajdhaniRegular">
+                {numericInputErrors.rows && (
+                  <p className="text-red-500">{numericInputErrors.rows}</p>
+                )}
+                {numericInputErrors.columns && (
+                  <p className="text-red-500">{numericInputErrors.columns}</p>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex flex-col border-basic border-2 w-full">
@@ -235,6 +349,11 @@ export const InputManual = () => {
                   className="block text-center w-full py-2 px-10 border border-2 border-basic bg-black text-basic"
                   required
                 />
+                {numericInputErrors.numSequences && (
+                  <p className="text-red-500 mt-1 font-rajdhaniRegular">
+                    {numericInputErrors.numSequences}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col w-full">
                 <p className="text-basic font-rajdhaniRegular text-lg">
@@ -249,6 +368,11 @@ export const InputManual = () => {
                   className="block text-center w-full px-10 py-2 border border-2 border-basic bg-black text-basic"
                   required
                 />
+                {numericInputErrors.sequenceSize && (
+                  <p className="text-red-500 mt-1 font-rajdhaniRegular">
+                    {numericInputErrors.sequenceSize}
+                  </p>
+                )}
               </div>
             </div>
           </div>
