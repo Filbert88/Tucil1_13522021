@@ -95,27 +95,36 @@ def show_code_matrix(matrix, sequences, rewards):
         print(reward)
     print()
 
-def validate_input(prompt, min_value=None, max_value=None, exact_value=None):
+
+def validate_input(prompt, min_value=1, max_value=None, exact_value=None, token=False):
     while True:
+        value = input(prompt)
         try:
-            value = int(input(prompt))
-            if min_value is not None and value < min_value:
-                raise ValueError(f"The value must be at least {min_value}.")
-            if max_value is not None and value > max_value:
-                raise ValueError(f"The value must not exceed {max_value}.")
-            if exact_value is not None and value != exact_value:
-                raise ValueError(f"The value must exactly be {exact_value}.")
-            return value
+            if token:  # Token validation
+                if len(value) != 2:
+                    raise ValueError("Each token must be exactly two characters long.")
+                if not value.isalnum():
+                    raise ValueError("Tokens must be alphanumeric.")
+                return value.upper()  
+            else:  
+                value = int(value)
+                if min_value is not None and value < min_value:
+                    raise ValueError(f"The value must be at least {min_value}.")
+                if max_value is not None and value > max_value:
+                    raise ValueError(f"The value must not exceed {max_value}.")
+                if exact_value is not None and value != exact_value:
+                    raise ValueError(f"The value must exactly be {exact_value}.")
+                return value
         except ValueError as e:
             print("Invalid input:", e)
 
 def collect_tokens(unique_tokens):
     tokens = []
     for i in range(unique_tokens):
-        token = input(f"Enter token {i+1}: ").strip()
+        token = validate_input(f"Enter token {i+1}: ", token=True)
         while token in tokens:
             print("This token has already been entered. Please enter a unique token.")
-            token = input(f"Enter token {i+1}: ").strip()
+            token = validate_input(f"Enter token {i+1}: ", token=True)
         tokens.append(token)
     return tokens
 

@@ -26,12 +26,12 @@ def main():
 
         end = time.time()
     else:
-        unique_tokens = validate_input("\nEnter the number of unique tokens you want to use: ", min_value=1)
+        unique_tokens = validate_input("\nEnter the number of unique tokens you want to use: ", min_value=2)
         tokens = collect_tokens(unique_tokens)
-        buffer_size = validate_input("Enter the size of the buffer you want: ", min_value=2)
+        buffer_size = validate_input("Enter the size of the buffer you want: ", min_value=1)
         row = validate_input("Enter the number of rows you want: ", min_value=1)
         column = validate_input("Enter the number of columns you want: ", min_value=1)
-        number_of_sequences = validate_input("Enter the number of sequences you want: ", min_value=1)
+        number_of_sequences = validate_input("Enter the number of sequences you want: ", min_value=2)
         sequences_size = validate_input("Enter the maximum size of sequences you want: ", min_value=1, max_value=buffer_size)
 
         matrix = generate_matrix(row, column, tokens)
