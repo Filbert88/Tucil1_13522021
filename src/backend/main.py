@@ -26,21 +26,18 @@ def main():
 
         end = time.time()
     else:
-        unique_tokens = validate_input("\nEnter the number of unique tokens you want to use: ")
-        tokens = []
-        for i in range(unique_tokens):
-            tokens.append(input(f"Enter token {i+1}: "))
-        buffer_size = validate_input("Enter the size of the buffer you want: ")
-        row = validate_input("Enter the number of rows you want: ")
-        column = validate_input("Enter the number of columns you want: ")
-        number_of_sequences = validate_input("Enter the number of sequences you want: ")
-        sequences_size = validate_input("Enter the maximum size of sequences you want: ")
+        unique_tokens = validate_input("\nEnter the number of unique tokens you want to use: ", min_value=1)
+        tokens = collect_tokens(unique_tokens)
+        buffer_size = validate_input("Enter the size of the buffer you want: ", min_value=2)
+        row = validate_input("Enter the number of rows you want: ", min_value=1)
+        column = validate_input("Enter the number of columns you want: ", min_value=1)
+        number_of_sequences = validate_input("Enter the number of sequences you want: ", min_value=1)
+        sequences_size = validate_input("Enter the maximum size of sequences you want: ", min_value=1, max_value=buffer_size)
 
         matrix = generate_matrix(row, column, tokens)
         sequences = generate_sequences(tokens, number_of_sequences, sequences_size)
         rewards = [random.randint(1, 100) for _ in range(number_of_sequences)]
 
-        # Combine sequences and rewards into a dictionary
         sequences = {tuple(seq): reward for seq, reward in zip(sequences, rewards)}
         show_code_matrix(matrix, sequences, rewards)
         

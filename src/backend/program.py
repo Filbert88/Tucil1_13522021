@@ -3,6 +3,7 @@ def find_optimal_path(matrix, sequences, buffer_size):
     max_reward = 0
     optimal_path = []
     optimal_path_coords = []
+    max_sequence_reward = max(sequences.values())
 
     def check_sequences_in_path(path):
         total_reward = 0
@@ -13,31 +14,36 @@ def find_optimal_path(matrix, sequences, buffer_size):
                 total_reward += reward
         return total_reward
 
-    # Generate paths and calculate rewards
-    def generate_path(row, col, path, coords, step, direction):
+    def generate_path(row, col, path, coords, step, current_reward, direction):
         nonlocal max_reward, optimal_path, optimal_path_coords
+        
+        potential_reward = current_reward + (buffer_size - step) * max_sequence_reward
+        if potential_reward < max_reward:
+            return  
+        
         if step == buffer_size or row >= rows or row < 0 or col >= cols or col < 0:
             return
-        
+
         new_path = path + [matrix[row][col]]
-        new_coords = coords + [(row + 1, col + 1)]
+        new_coords = coords + [(row+1, col+1)]
+        new_reward = check_sequences_in_path(new_path)
         
-        reward = check_sequences_in_path(new_path)
-        if reward > max_reward:
-            max_reward = reward
+        if new_reward > max_reward:
+            max_reward = new_reward
             optimal_path = new_path
             optimal_path_coords = new_coords
-
+        
         if direction == 'row':
             for next_col in range(cols):
-                generate_path(row, next_col, new_path, new_coords, step + 1, 'col')
+                if next_col != col:  
+                    generate_path(row, next_col, new_path, new_coords, step + 1, new_reward, 'col')
         else:
             for next_row in range(rows):
-                generate_path(next_row, col, new_path, new_coords, step + 1, 'row')
+                if next_row != row: 
+                    generate_path(next_row, col, new_path, new_coords, step + 1, new_reward, 'row')
 
-    # Initiate path generation from the first row
     for col_start in range(cols):
-        generate_path(0, col_start, [], [], 0, 'col')
+        generate_path(0, col_start, [], [], 0, 0, 'col')
 
     return optimal_path, optimal_path_coords, max_reward
 

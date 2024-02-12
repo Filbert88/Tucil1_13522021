@@ -16,8 +16,8 @@ def handle_generate():
     data = request.json
     matrix = generate_matrix(data['rows'], data['columns'], data['tokens'])
     sequences = generate_sequences(data['tokens'], data['numSequences'], data['sequenceSize'])
-
     sequences_with_rewards = [{'tokens': seq, 'reward': randint(1, 100)} for seq in sequences]
+
     return jsonify({'matrix': matrix, 'sequences': sequences_with_rewards})
 
 @app.route('/solve', methods=['POST'])
@@ -29,7 +29,11 @@ def handle_solve():
     optimal_path, optimal_path_coords, max_reward = find_optimal_path(data['matrix'], sequences_with_rewards, data['bufferSize'])
     end = time.time()
     execution_time = (end-start) * 1000
-    return jsonify({'maxReward': max_reward, 'optimalPath': optimal_path, 'coordinates': optimal_path_coords, 'executionTime' : execution_time})
+
+    return jsonify({'maxReward': max_reward, 
+                    'optimalPath': optimal_path, 
+                    'coordinates': optimal_path_coords, 
+                    'executionTime' : execution_time})
 
 UPLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -49,7 +53,7 @@ def upload_file():
             buffer_size, matrix, number_of_sequences, sequences, rewards = read_input_file(filepath)
             sequences_with_rewards = [{'tokens': list(seq), 'reward': reward} for seq, reward in sequences.items()]
 
-            os.remove(filepath)  # Clean up by removing the file after processing
+            os.remove(filepath)  
 
             return jsonify({
                 'bufferSize': buffer_size,
@@ -57,7 +61,7 @@ def upload_file():
                 'sequences': sequences_with_rewards
             }), 200
         except (ValueError, IOError) as e:
-            os.remove(filepath)  # Clean up by removing the file if error occurs
+            os.remove(filepath) 
             return jsonify(message=str(e)), 400       
     else:
         return jsonify(message="No file uploaded."), 400

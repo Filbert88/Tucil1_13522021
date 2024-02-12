@@ -34,7 +34,6 @@ def read_input_file(file_path):
     except ValueError as e:
         raise ValueError(f"Invalid file format: {e}")
     except Exception as e:
-        # Catch other potential errors, e.g., file not found, permission issues
         raise IOError(f"Error reading file: {e}")
 
 def get_valid_filename(prompt, initial_filename=None, directory="output"):
@@ -96,15 +95,28 @@ def show_code_matrix(matrix, sequences, rewards):
         print(reward)
     print()
 
-def validate_input(prompt):
+def validate_input(prompt, min_value=None, max_value=None, exact_value=None):
     while True:
         try:
             value = int(input(prompt))
-            if value < 0:
-                print("Error: Please re-enter a non-negative integer.")
-            else:
-                return value
-        except ValueError:
-            print("Error: Please re-enter a valid integer.")
+            if min_value is not None and value < min_value:
+                raise ValueError(f"The value must be at least {min_value}.")
+            if max_value is not None and value > max_value:
+                raise ValueError(f"The value must not exceed {max_value}.")
+            if exact_value is not None and value != exact_value:
+                raise ValueError(f"The value must exactly be {exact_value}.")
+            return value
+        except ValueError as e:
+            print("Invalid input:", e)
+
+def collect_tokens(unique_tokens):
+    tokens = []
+    for i in range(unique_tokens):
+        token = input(f"Enter token {i+1}: ").strip()
+        while token in tokens:
+            print("This token has already been entered. Please enter a unique token.")
+            token = input(f"Enter token {i+1}: ").strip()
+        tokens.append(token)
+    return tokens
 
 
