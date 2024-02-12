@@ -167,7 +167,7 @@ export const InputManual = () => {
                 id="buffersize"
                 value={bufferSize}
                 onChange={(e) => setBufferSize(e.target.value)}
-                className="block text-center w-full px-10 py-2 bg-black border border-2 border-basic text-white"
+                className="block text-center w-full px-10 py-2 bg-black border border-2 border-basic text-basic"
                 placeholder="5"
                 required
               />
@@ -185,7 +185,7 @@ export const InputManual = () => {
                 onChange={(e) =>
                   setCombinedTokens(e.target.value.toUpperCase())
                 }
-                className="block w-full py-2 px-10 border border-2 border-basic text-center bg-black text-white"
+                className="w-full py-2 px-10 border border-2 border-basic text-center bg-black text-basic"
                 placeholder="7A 55 1C E9"
                 required
               />
@@ -202,7 +202,7 @@ export const InputManual = () => {
                 placeholder="8"
                 value={rows}
                 onChange={(e) => setRows(e.target.value)}
-                className="block text-center w-28  py-2 border border-basic bg-black text-basic"
+                className="block text-center w-28  py-2 border border-2 border-basic bg-black text-basic"
                 required
               />
               <p className="text-basic">X</p>
@@ -212,7 +212,7 @@ export const InputManual = () => {
                 placeholder="8"
                 value={columns}
                 onChange={(e) => setColumns(e.target.value)}
-                className="block text-center w-28 py-2 border border-basic bg-black text-basic"
+                className="block text-center w-28 py-2 border border-2 border-basic bg-black text-basic"
                 required
               />
             </div>
@@ -232,7 +232,7 @@ export const InputManual = () => {
                   placeholder="8"
                   value={numSequences}
                   onChange={(e) => setNumSequences(e.target.value)}
-                  className="block text-center w-full py-2 px-10 border border-basic bg-black text-basic"
+                  className="block text-center w-full py-2 px-10 border border-2 border-basic bg-black text-basic"
                   required
                 />
               </div>
@@ -246,7 +246,7 @@ export const InputManual = () => {
                   placeholder="8"
                   value={sequenceSize}
                   onChange={(e) => setSequenceSize(e.target.value)}
-                  className="block text-center w-full px-10 py-2 border border-basic bg-black text-basic"
+                  className="block text-center w-full px-10 py-2 border border-2 border-basic bg-black text-basic"
                   required
                 />
               </div>
@@ -256,7 +256,7 @@ export const InputManual = () => {
         <div className="flex justify-center">
           <button
             type="submit"
-            className="mt-4 px-4 py-4 bg-black text-basic border border-2 border-basic font-semibold max-w-6/12"
+            className="mt-4 px-4 py-4 bg-black text-basic border border-2 border-basic font-semibold text-xl font-rajdhaniSemiBold max-w-6/12"
           >
             Generate Matrix and Sequences
           </button>
@@ -265,18 +265,15 @@ export const InputManual = () => {
       {generatedMatrix.length > 0 && generatedSequences.length > 0 && (
         <>
           <div className="result-container space-y-4 mt-8">
-            <div className="matrix-container mb-4 mt-10 border border-2 border-basic min-w-[300px] min-h-[300px] overflow-auto">
-              <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black">
+            <div className="matrix-container mb-4 mt-10 border border-2 border-basic min-w-[300px] min-h-[300px] overflow-auto font-rajdhaniRegular">
+              <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black font-rajdhaniBold text-2xl">
                 Matrix
               </h3>
-              <div className="matrix-box rounded-md h-full flex flex-col justify-center items-center">
+              <div className="matrix-box rounded-md h-full flex flex-col justify-center items-center text-basic font-rajdhaniRegular text-[20px]">
                 {generatedMatrix.map((row, rowIndex) => (
                   <div key={rowIndex} className="flex space-x-2">
                     {row.map((token: string, tokenIndex: number) => (
-                      <span
-                        key={tokenIndex}
-                        className="p-2 bg-gray-800 rounded"
-                      >
+                      <span key={tokenIndex} className="p-2">
                         {token}
                       </span>
                     ))}
@@ -285,81 +282,91 @@ export const InputManual = () => {
               </div>
             </div>
             <div className="sequences-container mb-4 mt-4 min-h-[200px] min-w-[300px] overflow-auto border border-2 border-basic">
-              <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black">
+              <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black font-rajdhaniBold text-2xl">
                 Sequences and Rewards
               </h3>
-              <div className="sequences-box rounded-md">
+              <div className="sequences-box rounded-md text-basic font-rajdhaniRegular text-[20px]">
                 {generatedSequences.map((sequence, index) => (
                   <div
                     key={index}
-                    className="sequence-item bg-gray-800 rounded mb-2 p-2 flex justify-center"
+                    className="sequence-item rounded mb-2 p-2 flex flex-col items-center"
                   >
-                    <span>{sequence.tokens.join(" - ")}</span>
+                    <span>
+                      Sequence {index + 1} : {sequence.tokens.join(" ")}
+                    </span>
                     <span className="reward font-bold text-blue-300">
-                      - Reward: {sequence.reward}
+                      Reward : {sequence.reward}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
+            {isLoading && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                <div className="bg-black rounded-lg max-w-lg w-full border border-2 border-basic">
+                  <h3 className="flex items-center justify-center text-3xl font-bold text-black h-[50px] bg-basic text-center font-rajdhaniBold">
+                    RESULT
+                  </h3>
+                  <div className="mt-8 mb-8 text-basic text-xl text-center space-y-4 font-rajdhaniRegular">
+                    <div>Loading...</div>
+                    <div>Sometimes it might take a long time ^.^</div>
+                    <div>Please kindly wait</div>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex flex-col items-center mt-4">
               <button
                 onClick={handleSolve}
-                className="px-4 py-2 bg-green-500 hover:bg-green-700 rounded-md text-white font-semibold w-3/4"
+                className="mt-8 px-8 py-4 bg-bgblack text-basic border border-2 border-basic font-semibold font-rajdhaniRegular text-xl"
               >
                 Solve Optimal Path
               </button>
               {optimalPathResult.found && (
                 <button
                   onClick={toggleModal}
-                  className="flex justify-center px-4 py-2 mt-4 bg-green-500 hover:bg-green-700 text-white rounded-md font-semibold"
+                  className="flex justify-center px-4 py-2 mt-4 bg-basic text-black font-rajdhaniSemiBold font-semibold"
                 >
                   View Result
                 </button>
               )}
             </div>
-            {isLoading && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                <div className="bg-black rounded-lg max-w-lg w-full border border-2 border-basic">
-                  <h3 className="flex items-center justify-center text-3xl font-bold text-black h-[60px] bg-basic text-center">
-                    RESULT
-                  </h3>
-                  <div className="loader">Loading...</div>
-                </div>
-              </div>
-            )}
             {isModalOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center">
                 <div className="bg-bgblack rounded-lg max-w-lg w-full border border-basic border-2 text-basic">
-                  <h3 className="flex items-center justify-center text-3xl font-bold text-black h-[60px] bg-basic text-center">
+                  <h3 className="flex items-center justify-center text-3xl font-bold text-black h-[60px] bg-basic text-center font-rajdhaniBold">
                     RESULT
                   </h3>
                   <div className="pr-5 pl-5 pb-5">
                     <div className="mt-8 mb-8">
                       {optimalPathResult.maxReward === 0 ? (
-                        <p>There are no sequences.</p>
+                        <p className="text-basic font-rajdhaniRegular text-xl text-center">
+                          There are no sequences.
+                        </p>
                       ) : (
                         <>
-                          <p className="text-[#5ee9f2] mb-2 text-2xl">
+                          <p className="text-[#5ee9f2] mb-2 text-2xl font-rajdhaniSemiBold">
                             {optimalPathResult.maxReward === totalRewards
                               ? "Full Solution Found!"
                               : "Partial Solution Found!"}
                           </p>
-                          <p>Max Reward : {optimalPathResult.maxReward}</p>
-                          <p>
-                            Best Path :{" "}
-                            {optimalPathResult.sequencesResult.join(" -> ")}
-                          </p>
-                          <p>
-                            Best Path Coordinates :{" "}
-                            {optimalPathResult.coordinates
-                              .map((coord) => `(${coord.join(", ")})`)
-                              .join(" -> ")}
-                          </p>
-                          <p>
-                            Execution Time :{" "}
-                            {optimalPathResult.executionTime.toFixed(2)} ms
-                          </p>
+                          <div className="text-basic font-rajdhaniRegular text-xl">
+                            <p>Max Reward : {optimalPathResult.maxReward}</p>
+                            <p>
+                              Best Path :{" "}
+                              {optimalPathResult.sequencesResult.join(" -> ")}
+                            </p>
+                            <p>
+                              Best Path Coordinates :{" "}
+                              {optimalPathResult.coordinates
+                                .map((coord) => `(${coord.join(", ")})`)
+                                .join(" -> ")}
+                            </p>
+                            <p>
+                              Execution Time :{" "}
+                              {optimalPathResult.executionTime.toFixed(2)} ms
+                            </p>
+                          </div>
                         </>
                       )}
                     </div>
@@ -367,14 +374,14 @@ export const InputManual = () => {
                       {optimalPathResult.maxReward !== 0 && (
                         <button
                           onClick={downloadResult}
-                          className="download-result-button px-4 py-2 bg-basic hover:bg-black hover:text-basic hover:border-basic hover:border text-black rounded-md font-semibold"
+                          className="download-result-button px-4 py-2 bg-basic hover:bg-black hover:text-basic hover:border-basic hover:border text-black rounded-md font-semibold text-xl font-rajdhaniSemiBold"
                         >
                           Download Result
                         </button>
                       )}
                       <button
                         onClick={toggleModal}
-                        className="close-modal-button px-4 py-2 border border-basic hover:bg-basic hover:text-black text-basic rounded-md font-semibold"
+                        className="close-modal-button px-4 py-2 border border-basic hover:bg-basic hover:text-black text-basic rounded-md text-xl font-semibold font-rajdhaniSemiBold"
                       >
                         Close
                       </button>

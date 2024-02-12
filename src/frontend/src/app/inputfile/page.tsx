@@ -74,8 +74,8 @@ export const InputFile = () => {
       });
     } catch (error) {
       console.error("Error while solving:", error);
-    }finally{
-        setisLoading(false)
+    } finally {
+      setisLoading(false);
     }
   };
 
@@ -112,8 +112,8 @@ export const InputFile = () => {
         return;
       }
       const uploadData = await uploadResponse.json();
-      
-      setUploadError(""); 
+
+      setUploadError("");
     } catch (error) {
       console.error("Error uploading file:", error);
       setUploadError("An error occurred while uploading the file.");
@@ -178,11 +178,11 @@ export const InputFile = () => {
             type="file"
             accept=".txt"
             onChange={handleFileChange}
-            className="border border-2 border-basic hover:cursor-pointer"
+            className="border border-2 border-basic hover:cursor-pointer font-rajdhaniSemiBold"
           />
           <button
             onClick={handleFileUpload}
-            className="mt-4 px-4 py-2 border border-basic text-basic rounded-md"
+            className="mt-8 px-4 py-2 border border-basic text-basic text-xl rounded-md font-rajdhaniSemiBold"
           >
             Upload
           </button>
@@ -192,14 +192,14 @@ export const InputFile = () => {
       {fileContent.matrix.length > 0 && fileContent.sequences.length > 0 && (
         <>
           <div className="matrix-container mb-4 mt-10 border border-2 border-basic min-w-[300px] min-h-[300px] overflow-auto">
-            <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black">
+            <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black font-rajdhaniBold text-2xl">
               Matrix
             </h3>
-            <div className="matrix-box rounded-md h-full flex flex-col justify-center items-center">
+            <div className="rounded-md h-full flex flex-col justify-center items-center text-basic font-rajdhaniRegular text-[20px]">
               {fileContent.matrix.map((row, rowIndex) => (
                 <div key={rowIndex} className="flex space-x-2">
                   {row.map((token: string, tokenIndex: number) => (
-                    <span key={tokenIndex} className="p-2 bg-gray-800 rounded">
+                    <span key={tokenIndex} className="p-2">
                       {token}
                     </span>
                   ))}
@@ -208,18 +208,20 @@ export const InputFile = () => {
             </div>
           </div>
           <div className="sequences-container mb-4 mt-4 min-h-[200px] min-w-[300px] overflow-auto border border-2 border-basic">
-            <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black">
+            <h3 className="flex items-center justify-center font-bold bg-basic text-center h-10 text-black font-rajdhaniBold text-2xl">
               Sequences and Rewards
             </h3>
-            <div className="sequences-box rounded-md">
+            <div className="sequences-box rounded-md text-basic font-rajdhaniRegular text-[20px]">
               {fileContent.sequences.map((sequence, index) => (
                 <div
                   key={index}
-                  className="sequence-item bg-gray-800 rounded mb-2 p-2 flex justify-center"
+                  className="sequence-item rounded mb-2 p-2 flex flex-col items-center"
                 >
-                  <span>{sequence.tokens.join(" - ")}</span>
+                  <span>
+                    Sequence {index + 1} : {sequence.tokens.join(" ")}
+                  </span>
                   <span className="reward font-bold text-blue-300">
-                    - Reward: {sequence.reward}
+                    Reward : {sequence.reward}
                   </span>
                 </div>
               ))}
@@ -227,54 +229,72 @@ export const InputFile = () => {
           </div>
           <button
             onClick={handleSolveFromFile}
-            className="solve-button px-4 py-2 bg-green-500 hover:bg-green-700 rounded-md font-semibold"
+            className="mt-8 px-8 py-4 bg-bgblack text-basic border border-2 border-basic font-semibold font-rajdhaniRegular text-xl hover:bg-basic hover:text-black"
           >
             Solve Optimal Path
           </button>
           {optimalPathResult.found && (
             <button
               onClick={toggleModal}
-              className="view-result-button px-4 py-2 mt-4 bg-green-500 hover:bg-green-700 text-white rounded-md font-semibold"
+              className="view-result-button px-4 py-2 mt-4 bg-basic text-black hover:border hover:border-2 hover:border-basic hover:text-basic hover:bg-black text-xl font-semibold font-rajdhaniRegular"
             >
               View Result
             </button>
           )}
+          {isLoading && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+              <div className="bg-black rounded-lg max-w-lg w-full border border-2 border-basic font-rajdhaniRegular">
+                <h3 className="flex items-center justify-center text-3xl font-bold text-black h-[50px] bg-basic text-center">
+                  RESULT
+                </h3>
+                <div className="mt-8 mb-8 text-basic text-xl text-center space-y-4">
+                  <div>Loading...</div>
+                  <div>Sometimes it might take a long time ^.^</div>
+                  <div>Please kindly wait</div>
+                </div>
+              </div>
+            </div>
+          )}
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center">
               <div className="bg-bgblack rounded-lg max-w-lg w-full border border-basic border-2 text-basic">
-                <h3 className="flex items-center justify-center text-3xl font-bold text-black h-[60px] bg-basic text-center">
+                <h3 className="flex items-center justify-center text-4xl font-bold text-black h-[60px] bg-basic text-center font-rajdhaniBold">
                   RESULT
                 </h3>
                 <div className="pr-5 pl-5 pb-5">
                   <div className="mt-8 mb-8">
                     {optimalPathResult.maxReward === 0 ? (
-                      <p>There are no sequences.</p>
+                      <p className="text-center text-basic text-xl">
+                        There are no sequences.
+                      </p>
                     ) : (
                       <>
-                        <p className="text-[#5ee9f2] mb-2 text-2xl">
+                        <p className="text-[#5ee9f2] mb-2 text-3xl font-rajdhaniSemiBold">
                           {optimalPathResult.maxReward === totalRewards
                             ? "Full Solution Found!"
                             : "Partial Solution Found!"}
                         </p>
-                        <p>Max Reward : {optimalPathResult.maxReward}</p>
-                        <p>
-                          Best Path :{" "}
-                          {optimalPathResult.sequencesResult.join(" -> ")}
-                        </p>
-                        <p>
-                          Best Path Coordinates :{" "}
-                          {optimalPathResult.coordinates
-                            .map((coord) => `(${coord.join(", ")})`)
-                            .join(" -> ")}
-                        </p>
-                        <p>
-                          Execution Time :{" "}
-                          {optimalPathResult.executionTime.toFixed(2)} ms
-                        </p>
+                        <div className="text-basic font-rajdhaniRegular text-xl">
+                          <p>Max Reward : {optimalPathResult.maxReward}</p>
+                          <p>
+                            Best Path :{" "}
+                            {optimalPathResult.sequencesResult.join(" -> ")}
+                          </p>
+                          <p>
+                            Best Path Coordinates :{" "}
+                            {optimalPathResult.coordinates
+                              .map((coord) => `(${coord.join(", ")})`)
+                              .join(" -> ")}
+                          </p>
+                          <p>
+                            Execution Time :{" "}
+                            {optimalPathResult.executionTime.toFixed(2)} ms
+                          </p>
+                        </div>
                       </>
                     )}
                   </div>
-                  <div className="flex flex-row space-x-4 justify-center">
+                  <div className="flex flex-row space-x-4 justify-center font-rajdhaniSemiBold text-xl">
                     {optimalPathResult.maxReward !== 0 && (
                       <button
                         onClick={downloadResult}
