@@ -182,12 +182,16 @@ export const InputFile = () => {
           />
           <button
             onClick={handleFileUpload}
-            className="mt-8 px-4 py-2 border border-basic text-basic text-xl rounded-md font-rajdhaniSemiBold"
+            className="mt-8 px-4 py-2 border border-basic text-basic hover:bg-basic hover:text-black text-xl rounded-md font-rajdhaniSemiBold"
           >
             Upload
           </button>
         </div>
-        {uploadError && <div className="error-message">{uploadError}</div>}
+        {uploadError && (
+          <div className="error-message mt-4 text-center text-red-500 font-rajdhaniRegular">
+            {uploadError}
+          </div>
+        )}
       </div>
       {fileContent.matrix.length > 0 && fileContent.sequences.length > 0 && (
         <>
