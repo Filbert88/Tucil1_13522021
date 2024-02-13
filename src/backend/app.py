@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from random import randint
-from util import generate_matrix, generate_sequences, read_input_file  # Ensure util.py is accessible
+from util import generate_matrix, generate_sequences, read_input_file  
 from program import find_optimal_path
 
 app = Flask(__name__)
