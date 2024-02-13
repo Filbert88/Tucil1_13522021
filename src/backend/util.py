@@ -5,6 +5,8 @@ def read_input_file(file_path):
     try:
         with open(file_path, 'r') as file:
             buffer_size = int(file.readline().strip())
+            if not file_path.endswith('.txt'):
+                raise ValueError("Only .txt files are allowed.")
             if buffer_size <= 0:
                 raise ValueError("Buffer size must be positive.")
 
@@ -37,26 +39,29 @@ def read_input_file(file_path):
         raise IOError(f"Error reading file: {e}")
 
 def get_valid_filename(prompt, initial_filename=None, directory="output"):
-    filename = initial_filename
     while True:
-        if filename is None:
-            filename = input(prompt) 
+        filename = initial_filename or input(prompt)
+        if not filename.endswith('.txt'):
+            print("The file must have a .txt extension.")
+            initial_filename = None  
+            continue
 
         full_path = os.path.join(directory, filename)
-
         if not os.path.exists(full_path):
             return filename
         else:
             print(f"File {filename} already exists. Please enter a different name.")
-            filename = None  
+            initial_filename = None  
 
 def save_output_to_file(reward, sequence, coordinates, execution_time_ms, file_name=None):
-    directory = "../test"
-    os.makedirs(directory, exist_ok=True)  
+    directory = "output"
+    os.makedirs(directory, exist_ok=True)
 
-    if file_name is None or os.path.exists(os.path.join(directory, file_name)):
+    if file_name is None:
         file_name_prompt = "Enter the desired file name (with .txt extension): "
-        file_name = get_valid_filename(file_name_prompt, file_name, directory)
+        file_name = get_valid_filename(file_name_prompt, directory=directory)
+    elif not file_name.endswith('.txt'):
+        print("The file must have a .txt extension.")
 
     full_path = os.path.join(directory, file_name)
 

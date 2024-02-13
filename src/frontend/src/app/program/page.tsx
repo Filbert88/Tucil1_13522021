@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { InputFile } from "../inputfile/page";
 import { InputManual } from "../inputmanual/page";
 
-const program = () => {
+const Program = () => {
   const [showFile, setShowFile] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
@@ -54,4 +54,4 @@ const program = () => {
   );
 };
 
-export default program;
+export default Program;
